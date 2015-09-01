@@ -1,0 +1,6 @@
+This is some code from a paper "DIGITAL FILTERING ON THE ARM7TDMI ARCHITECTURE"
+http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.161.1908&rep=rep1&type=pdf
+
+The library used a digital filtering library provided by ARM, which is not included here.
+
+The code will not compile out of the box because it needs external files from Keil / ARM.

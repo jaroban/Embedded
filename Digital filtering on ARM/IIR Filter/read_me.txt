@@ -1,0 +1,3 @@
+This program uses the pingpong method to filter data read via the ADC and sends the output onto the DAC.
+
+The filter coefficients are from a hi-pass filter with 48 kHz sampling frequency and a transition band at 4-5 kHz with 0.1 dB ripple in the passband and 70 dB attenuation in the stopband. It has 5 biquads with coefficients listed in coefs_2_14.txt. In sim.ini we generate two signals with the following frequencies: f1 = 4 kHz, f2 = 5 kHz, both with amplitude 0.8 volts. On the output we get a signal with f = 5 kHz.

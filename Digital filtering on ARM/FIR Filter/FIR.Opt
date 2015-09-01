@@ -1,0 +1,40 @@
+### uVision2 Project, (C) Keil Software
+### Do not modify !
+
+ cExt (*.c)
+ aExt (*.s*; *.src; *.a*)
+ oExt (*.obj)
+ lExt (*.lib)
+ tExt (*.txt; *.h; *.inc)
+ pExt (*.plm)
+ CppX (*.cpp)
+ DaveTm { 0,0,0,0,0,0,0,0 }
+
+Target (KEMT Board), 0x0004 // Tools: 'ARM-ADS'
+GRPOPT 1,(Startup),1,0,0
+GRPOPT 2,(Main),1,0,0
+
+OPTFFF 1,1,2,0,0,0,0,0,<.\Startup.s><Startup.s> 
+OPTFFF 2,2,1,201326594,0,1,18,0,<.\main.c><main.c> { 44,0,0,0,2,0,0,0,3,0,0,0,255,255,255,255,255,255,255,255,252,255,255,255,226,255,255,255,22,0,0,0,29,0,0,0,233,2,0,0,90,1,0,0 }
+OPTFFF 2,3,4,0,0,0,0,0,<.\Filter.lib><Filter.lib> 
+OPTFFF 2,4,4,0,0,0,0,0,<.\kemt_board.lib><kemt_board.lib> 
+
+
+TARGOPT 1, (KEMT Board)
+ ADSCLK=12000000
+  OPTTT 1,1,1,0
+  OPTHX 1,65535,0,0,0
+  OPTLX 79,66,8,<.\Lst\>
+  OPTOX 16
+  OPTLT 1,1,1,0,1,1,0,1,0,0,0,0
+  OPTXL 1,1,1,1,1,1,1,0,0
+  OPTFL 1,0,1
+  OPTBL 0,(Data Sheet)<DATASHTS\PHILIPS\LPC2141_42_44_46_48.PDF>
+  OPTBL 1,(User Manual)<DATASHTS\PHILIPS\user_manual_LPC214x.pdf>
+  OPTDL (SARM.DLL)(-cLPC2100)(DARMP.DLL)(-pLPC2148)(SARM.DLL)()(TARMP.DLL)(-pLPC2148)
+  OPTDBG 48125,0,()()()()(.\sim.ini)()()()()() (BIN\UL2ARM.DLL)()()()
+  OPTDF 0x40000000
+  OPTLE <>
+  OPTLC <>
+EndOpt
+
