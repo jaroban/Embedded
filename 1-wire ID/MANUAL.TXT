@@ -1,0 +1,30 @@
+Definicie
+---------
+Master kluc: 1 kluc, ktorym mozete pridavat a mazat user kluce, pripadne
+             resetovat dosku.
+User kluc:   1 z max. 64 klucov, ktorym doska povoluje pristup k vytahu.
+Reset dosky: Vymazanie vsetkych user klucov.
+
+
+Stavy dosky
+-----------
+Stav 0 (blika cervena):         Ak prilozite hocijaky kluc, doska ho prijme
+                                 ako master kluc a prejde do stavu 1.
+
+Stav 1 (blika zelena):          Ak prilozite user kluc, mozete privolat vytah.
+                                Ak prilozite master kluc, doska prejde do
+                                 stavu 2.
+
+Stav 2 (svieti zelena):         Ak zaciti master kluc, prejde do stavu 3.
+                                Ak zaciti hocijaky iny kluc, zapamata si ho
+                                 ako user kluc. Takto mozete pridat az do 85
+                                 klucov. Skoncite prilozenim master kluca.
+
+Stav 3 (svieti cervena):        Ak doska po 5 sekundach nezaciti kluc, 
+                                 vrati sa do stavu 1.
+                                Ak zaciti master kluc, resetne dosku a prejde
+                                 do stavu 0.
+                                Ak zaciti user kluc, vymaze ho a prejde do
+                                 stavu 1.
+
+Ak svieti zlta LEDka, znamena to, ze kluc mozete odobrat.

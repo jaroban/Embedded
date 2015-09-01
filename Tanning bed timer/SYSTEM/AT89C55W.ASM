@@ -1,0 +1,93 @@
+; version 1.0
+
+p0      data    080h
+sp      data    081h
+dpl     data    082h
+dph     data    083h
+dpl1    data    084h
+dph1    data    085h
+pcon    data    087h
+tcon    data    088h
+tmod    data    089h
+tl0     data    08ah
+tl1     data    08bh
+th0     data    08ch
+th1     data    08dh
+auxr    data    08eh
+p1      data    090h
+scon    data    098h
+sbuf    data    099h
+p2      data    0a0h
+auxr1   data    0a2h
+dps     data    0a2h
+wdtrst  data    0a6h
+ie      data    0a8h
+p3      data    0b0h
+ip      data    0b8h
+t2con   data    0c8h
+t2mod   data    0c9h
+rcap2l  data    0cah
+rcap2h  data    0cbh
+tl2     data    0cch
+th2     data    0cdh
+psw     data    0d0h
+acc     data    0e0h
+b       data    0f0h
+
+it0     bit     088h
+ie0     bit     089h
+it1     bit     08ah
+ie1     bit     08bh
+tr0     bit     08ch
+tf0     bit     08dh
+tr1     bit     08eh
+tf1     bit     08fh
+
+ri      bit     098h
+ti      bit     099h
+rb8     bit     09ah
+tb8     bit     09bh
+ren     bit     09ch
+sm2     bit     09dh
+sm1     bit     09eh
+sm0     bit     09fh
+
+ex0     bit     0a8h
+et0     bit     0a9h
+ex1     bit     0aah
+et1     bit     0abh
+es      bit     0ach
+et2     bit     0adh
+ea      bit     0afh
+
+px0     bit     0b8h
+pt0     bit     0b9h
+px1     bit     0bah
+pt1     bit     0bbh
+ps      bit     0bch
+
+cp_rl2  bit     0c8h
+c_t2    bit     0c9h
+tr2     bit     0cah
+exen2   bit     0cbh
+tclk    bit     0cch
+rclk    bit     0cdh
+exf2    bit     0ceh
+tf2     bit     0cfh
+
+p       bit     0d0h
+f1      bit     0d1h
+ov      bit     0d2h
+rs0     bit     0d3h
+rs1     bit     0d4h
+f0      bit     0d5h
+ac      bit     0d6h
+cy      bit     0d7h
+
+reset   code    000h
+exti0   code    003h
+timer0  code    00bh
+exti1   code    013h
+timer1  code    01bh
+serp0   code    023h
+t2ovflw code    02bh

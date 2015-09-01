@@ -1,0 +1,412 @@
+; version 1.0
+
+lcd_on          bit     acc.2
+lcd_cursor      bit     acc.1
+lcd_blink       bit     acc.0
+
+write_to_lcd:   mov     p0,a
+                ret
+
+gonna_read_lcd: mov     p0,#0ffh
+                ret
+
+read_from_lcd:  mov     a,p0
+                ret
+
+lcd_delay:      nop
+                nop
+                nop
+                nop
+                nop
+                nop
+                nop
+                ret
+
+lcd_command:    clr     lcd_rs
+                sjmp    lcd_write
+lcd_data:       setb    lcd_rs
+lcd_write:      clr     lcd_rw
+                call    write_to_lcd
+                call    lcd_delay
+                setb    lcd_en
+                call    lcd_delay
+                clr     lcd_en
+                call    lcd_delay
+                clr     lcd_rs
+                setb    lcd_rw
+                call    gonna_read_lcd
+                call    tmr_int_f
+                db      t_lcd,0,0,2
+lw_lp:          call    do_them
+                setb    lcd_en
+                call    lcd_delay
+                call    read_from_lcd
+                clr     lcd_en
+                jnb     acc.7,lw_ret
+                mov     a,#t_lcd
+                call    tmr_zro
+                jnc     lw_lp
+lw_ret:         ret
+
+lcd_clear_f:    mov     lcd_pos,#0
+                mov     r0,#lcd_table_old
+                mov     a,#' '
+                mov     r1,#lcd_rows
+lcf_lp:         mov     @r0,a
+                inc     r0
+                djnz    r1,lcf_lp
+                mov     a,#1
+                jmp     lcd_command
+
+lcd_mode_f:     anl     a,#7
+                orl     a,#8
+                jmp     lcd_command
+
+lcd_move_f:     mov     r0,a
+                clr     c
+                subb    a,#lcd_rows
+                jnc     lmf_ret
+                mov     a,r0
+                mov     lcd_pos,a
+                clr     c
+                subb    a,#lcd_row
+                jnc     lmf_skip
+                mov     a,r0
+                sjmp    lmf_drain
+lmf_skip:       orl     a,#40h
+lmf_drain:      orl     a,#80h
+                jmp     lcd_command
+lmf_ret:        ret
+
+lcd_put_byte:   call    lcd_data
+                inc     lcd_pos
+                mov     a,lcd_pos
+                cjne    a,#lcd_rows,lpb_try_row
+                clr     a
+                mov     lcd_pos,a
+                sjmp    lpb_drain
+lpb_try_row:    cjne    a,#lcd_row,lpb_ret
+                mov     a,#40h
+lpb_drain:      orl     a,#80h
+                jmp     lcd_command
+lpb_ret:        ret
+
+lcd_init:       clr     lcd_en
+                mov     a,#00111000b
+                call    lcd_command
+                mov     a,#00111000b
+                call    lcd_command
+                mov     a,#00010100b
+                call    lcd_command
+                clr     a
+                setb    lcd_on
+                clr     lcd_cursor
+                clr     lcd_blink
+                call    lcd_mode_f
+                mov     a,#00000110b
+                call    lcd_command
+                jmp     lcd_clear_f
+
+lcd_setup_f:    mov     r0,#lcd_table_old
+                mov     a,#' '
+                mov     r1,#lcd_rows
+lsf_lp:         mov     @r0,a
+                inc     r0
+                djnz    r1,lsf_lp
+                clr     a
+                setb    lcd_on
+                clr     lcd_cursor
+                clr     lcd_blink
+                mov     @r0,a
+                mov     a,#0ffh
+                inc     r0
+                mov     @r0,a
+                ret
+
+lcd_refresh:    mov     r0,#lcd_table
+                mov     r1,#lcd_table_old
+                mov     r2,#lcd_rows
+                mov     r6,#0
+                mov     r7,#0
+lcd_r_lp1:      mov     a,@r0
+                xrl     a,#' '
+                jz      lcd_r_skip1
+                inc     r7
+                sjmp    lcd_r_skip2
+lcd_r_skip1:    mov     a,@r1
+                xrl     a,#' '
+                jz      lcd_r_skip2
+                inc     r6
+lcd_r_skip2:    inc     r0
+                inc     r1
+                djnz    r2,lcd_r_lp1
+                mov     a,r7
+                add     a,#2
+                clr     c
+                subb    a,r6
+                jnc     lcd_r_skip3
+                jmp     lcd_clear_f
+lcd_r_skip3:    mov     r0,#lcd_table
+                mov     r1,#lcd_table_old
+                mov     r2,#0
+                mov     r3,#lcd_rows
+lcd_r_lp2:      mov     a,@r1
+                mov     b,a
+                mov     a,@r0
+                cjne    a,b,lcd_r_change
+                inc     r0
+                inc     r1
+                inc     r2
+                djnz    r3,lcd_r_lp2
+                mov     a,@r1
+                mov     b,a
+                mov     a,@r0
+                cjne    a,b,lcd_r_mode
+                anl     a,#3
+                jz      lcd_r_done
+                inc     r0
+                inc     r1
+                mov     a,@r1
+                mov     b,a
+                mov     a,@r0
+                cjne    a,b,lcd_r_move1
+                cjne    a,lcd_pos,lcd_r_move2
+lcd_r_done:     ret
+lcd_r_move1:    mov     @r1,a
+lcd_r_move2:    jmp     lcd_move_f
+lcd_r_mode:     mov     @r1,a
+                jmp     lcd_mode_f
+lcd_r_change:   mov     @r1,a
+                push    acc
+                mov     a,lcd_pos
+                xrl     a,r2
+                jz      lcd_r_ok
+                mov     a,r2
+                call    lcd_move_f
+lcd_r_ok:       pop     acc
+                jmp     lcd_put_byte
+
+lcd_setup:      mov     r0,#lcd_table
+                mov     a,#' '
+                mov     r1,#lcd_rows
+ls_lp:          mov     @r0,a
+                inc     r0
+                djnz    r1,ls_lp
+                clr     a
+                setb    lcd_on
+                clr     lcd_cursor
+                clr     lcd_blink
+                mov     @r0,a
+                inc     r0
+                mov     a,#0ffh
+                mov     @r0,a
+                ret
+
+lcd_mode:       mov     r0,#lcd_table+lcd_rows
+                anl     a,#7
+                mov     @r0,a
+                ret
+
+lcd_move:       mov     r0,#lcd_table+lcd_rows+1
+                mov     r1,a
+                clr     c
+                subb    a,#lcd_rows
+                jnc     lcd_m_ret
+                mov     a,r1
+                mov     @r0,a
+lcd_m_ret:      ret
+
+lcd_clear:      mov     r0,#lcd_table
+                mov     lcd_ind,#0
+                mov     a,#' '
+                mov     r1,#lcd_rows
+lcd_c_lp:       mov     @r0,a
+                inc     r0
+                djnz    r1,lcd_c_lp
+                ret
+
+lcd_out:        cjne    a,#n,lcd_o_ok
+                mov     a,lcd_ind
+                clr     c
+                subb    a,#lcd_row
+                jc      lcd_o_skip
+                push    ar0
+                push    ar1
+                push    ar2
+                mov     r0,#lcd_table
+                mov     r1,#lcd_table+lcd_row
+                mov     r2,#lcd_row
+lcd_o_lp:       mov     a,#' '
+                xch     a,@r1
+                mov     @r0,a
+                inc     r0
+                inc     r1
+                djnz    r2,lcd_o_lp
+                pop     ar2
+                pop     ar1
+                pop     ar0
+lcd_o_skip:     mov     lcd_ind,#lcd_row
+                ret
+lcd_o_ok:       push    ar0
+                push    acc
+                mov     a,lcd_ind
+                inc     a
+                xrl     a,#lcd_rows
+                jz      lcd_o_roll
+                xrl     a,#lcd_rows
+lcd_o_roll:     xch     a,lcd_ind
+                add     a,#lcd_table
+                mov     r0,a
+                pop     acc
+                mov     @r0,a
+                pop     ar0
+                ret
+
+lcd_hex:        mov     b,a
+                swap    a
+                call    hex_asc
+                call    lcd_out
+                mov     a,b
+                call    hex_asc
+                jmp     lcd_out     
+
+lcd_dec0:       mov     b,#10
+                div     ab
+                push    b
+                jz      ld0_only1
+                mov     b,#10
+                div     ab
+                jz      ld0_only2
+                add     a,#'0'
+                call    lcd_out
+ld0_only2:      mov     a,b
+                add     a,#'0'
+                call    lcd_out
+ld0_only1:      pop     acc
+                add     a,#'0'
+                jmp     lcd_out
+
+lcd_dec2:       mov     b,#10
+                div     ab
+                jz      ld2_only1
+                add     a,#'0'
+                sjmp    ld2_two
+ld2_only1:      mov     a,#' '
+ld2_two:        call    lcd_out                
+                mov     a,b
+                add     a,#'0'
+                jmp     lcd_out
+
+lcd_dec_ex2:    mov     b,#10
+                div     ab
+                add     a,#'0'
+                call    lcd_out                
+                mov     a,b
+                add     a,#'0'
+                jmp     lcd_out
+
+lcd_dec3:       mov     b,#10
+                div     ab
+                jz      ld3_only1
+                push    b
+                mov     b,#10
+                div     ab
+                jz      ld3_only2
+                add     a,#'0'
+                call    lcd_out
+ld3_middle:     mov     a,b
+                add     a,#'0'
+                call    lcd_out
+                sjmp    ld3_last
+ld3_only2:      mov     a,#' '
+                call    lcd_out
+                sjmp    ld3_middle
+ld3_only1:      push    b
+                mov     a,#' '
+                call    lcd_out
+                mov     a,#' '
+                call    lcd_out
+ld3_last:       pop     acc
+                add     a,#'0'
+                jmp     lcd_out
+
+pn_nxt:         call    lcd_out
+                inc     dptr
+puts_n:         clr     a
+                movc    a,@a+dptr
+                jnz     pn_nxt
+                ret
+
+puts_na:        jz      puts_n
+                mov     b,a
+pna_lp:         clr     a
+                movc    a,@a+dptr                
+                inc     dptr
+                jnz     pna_lp
+                djnz    b,pna_lp
+                jmp     puts_n
+
+puts_nf:        pop     dph
+                pop     dpl
+                sjmp    pnf_entry
+pnf_lp:         call    lcd_out
+pnf_entry:      clr     a
+                movc    a,@a+dptr
+                inc     dptr
+                jnz     pnf_lp
+                jmp     @a+dptr
+
+puts:           clr     a
+                movc    a,@a+dptr
+                call    lcd_out
+                inc     dptr
+                djnz    r0,puts
+                ret
+
+; string(2) at dptr+a*2 -> lcd
+puts_2:         rl      a
+                add     a,dpl
+                mov     dpl,a
+                clr     a
+                addc    a,dph
+                mov     dph,a
+                mov     r0,#2
+                jmp     puts
+
+; string(3) at dptr+a*3 -> lcd
+puts_3:         mov     r0,a
+                rl      a
+                add     a,r0
+                add     a,dpl
+                mov     dpl,a
+                clr     a
+                addc    a,dph
+                mov     dph,a
+                mov     r0,#3
+                jmp     puts
+
+define_chars:   mov     dptr,#char_table
+                mov     r0,#0
+                mov     r1,#64
+def_ch_lp:      clr     a
+                movc    a,@a+dptr
+                push    ar0
+                push    ar1
+                push    dpl
+                push    dph
+                push    acc
+                mov     a,r0
+                anl     a,#3fh
+                orl     a,#40h
+                call    lcd_command
+                pop     acc
+                call    lcd_data
+                call    rst_wd
+                pop     dph
+                pop     dpl
+                pop     ar1
+                pop     ar0
+                inc     dptr
+                inc     r0
+                djnz    r1,def_ch_lp
+                ret

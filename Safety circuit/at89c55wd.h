@@ -1,0 +1,159 @@
+/*
+    0 External 0 0x0003
+    1 Timer 0    0x000b
+    2 External 1 0x0013
+    3 Timer 1    0x001b
+    4 Serial     0x0023
+    5 Timer 2    0x002b
+*/
+
+#define SFR(x)   __sfr   __at (x)
+#define SFR16(x) __sfr16 __at (x)
+#define SBIT(x)  __sbit  __at (x)
+
+// basics
+SFR  (0xE0) ACC;
+SFR  (0xF0) B;
+SFR  (0x81) SP;
+
+SFR  (0xD0) PSW;
+SBIT (0xD0) P;
+SBIT (0xD1) UD;
+SBIT (0xD2) OV;
+SBIT (0xD3) RS0;
+SBIT (0xD4) RS1;
+SBIT (0xD5) F0;
+SBIT (0xD6) AC;
+SBIT (0xD7) CY;
+
+SFR  (0x87) PCON;
+SFR  (0x8E) AUXR;
+
+// data pointers
+SFR  (0xA2) AUXR1;  SFR  (0xA2) DPS;
+
+SFR  (0x83) DPH;    SFR  (0x82) DPL;
+SFR  (0x83) DPH0;   SFR  (0x82) DPL0;
+SFR  (0x83) DP0H;   SFR  (0x82) DP0L;
+SFR16(0x83 << 8 |         0x82) DPTR0;
+
+SFR  (0x85) DPH1;   SFR  (0x84) DPL1;
+SFR  (0x85) DP1H;   SFR  (0x84) DP1L;
+SFR16(0x85 << 8 |         0x84) DPTR1;
+
+// i/o
+SFR  (0x80) P0;
+SBIT (0x80) P0_0;
+SBIT (0x81) P0_1;
+SBIT (0x82) P0_2;
+SBIT (0x83) P0_3;
+SBIT (0x84) P0_4;
+SBIT (0x85) P0_5;
+SBIT (0x86) P0_6;
+SBIT (0x87) P0_7;
+
+SFR  (0x90) P1;
+SBIT (0x90) P1_0;   SBIT (0x90) T2;
+SBIT (0x91) P1_1;   SBIT (0x91) T2EX;
+SBIT (0x92) P1_2;
+SBIT (0x93) P1_3;
+SBIT (0x94) P1_4;
+SBIT (0x95) P1_5;
+SBIT (0x96) P1_6;
+SBIT (0x97) P1_7;
+
+SFR  (0xA0) P2;
+SBIT (0xA0) P2_0;
+SBIT (0xA1) P2_1;
+SBIT (0xA2) P2_2;
+SBIT (0xA3) P2_3;
+SBIT (0xA4) P2_4;
+SBIT (0xA5) P2_5;
+SBIT (0xA6) P2_6;
+SBIT (0xA7) P2_7;
+
+SFR  (0xB0) P3;
+SBIT (0xB0) P3_0;   SBIT (0xB0) RXD;
+SBIT (0xB1) P3_1;   SBIT (0xB1) TXD;
+SBIT (0xB2) P3_2;   SBIT (0xB2) INT0;
+SBIT (0xB3) P3_3;   SBIT (0xB3) INT1;
+SBIT (0xB4) P3_4;   SBIT (0xB4) T0;
+SBIT (0xB5) P3_5;   SBIT (0xB5) T1;
+SBIT (0xB6) P3_6;   SBIT (0xB6) WR;
+SBIT (0xB7) P3_7;   SBIT (0xB7) RD;
+
+// timer 0, timer 1
+SFR  (0x88) TCON;
+SBIT (0x88) IT0;
+SBIT (0x89) IE0;
+SBIT (0x8A) IT1;
+SBIT (0x8B) IE1;
+SBIT (0x8C) TR0;
+SBIT (0x8D) TF0;
+SBIT (0x8E) TR1;
+SBIT (0x8F) TF1;
+
+SFR  (0x89) TMOD;
+
+SFR  (0x8C) TH0;    SFR  (0x8A) TL0;
+SFR  (0x8C) T0H;    SFR  (0x8A) T0L;
+SFR16(0x8C << 8 |         0x8A) TMR0;
+
+SFR  (0x8D) TH1;    SFR  (0x8B) TL1;
+SFR  (0x8D) T1H;    SFR  (0x8B) T1L;
+SFR16(0x8D << 8 |         0x8B) TMR1;
+
+// timer 2
+SFR  (0xC8) T2CON;
+SBIT (0xC8) CP_RL2;
+SBIT (0xC9) C_T2;
+SBIT (0xCA) TR2;
+SBIT (0xCB) EXEN2;
+SBIT (0xCC) TCLK;
+SBIT (0xCD) RCLK;
+SBIT (0xCE) EXF2;
+SBIT (0xCF) TF2;
+
+SFR  (0xC9) T2MOD;
+
+SFR  (0xCD) TH2;    SFR  (0xCC) TL2;
+SFR  (0xCD) T2H;    SFR  (0xCC) T2L;
+SFR16(0xCD << 8 |         0xCC) TMR2;
+
+SFR  (0xCB) RCAP2H; SFR  (0xCA) RCAP2L;
+SFR16(0xCB << 8 |         0xCA) RCAP2;
+
+// serial port
+SFR  (0x98) SCON;
+SBIT (0x98) RI;
+SBIT (0x99) TI;
+SBIT (0x9A) RB8;
+SBIT (0x9B) TB8;
+SBIT (0x9C) REN;
+SBIT (0x9D) SM2;
+SBIT (0x9E) SM1;
+SBIT (0x9F) SM0;
+SBIT (0x9F) FE;
+
+SFR  (0x99) SBUF;
+
+// watchdog
+SFR  (0xA6) WDTRST;
+
+// interrupts
+SFR  (0xA8) IE;
+SBIT (0xA8) EX0;
+SBIT (0xA9) ET0;
+SBIT (0xAA) EX1;
+SBIT (0xAB) ET1;
+SBIT (0xAC) ES;
+SBIT (0xAD) ET2;
+SBIT (0xAF) EA;
+
+SFR  (0xB8) IP;
+SBIT (0xB8) PX0;
+SBIT (0xB9) PT0;
+SBIT (0xBA) PX1;
+SBIT (0xBB) PT1;
+SBIT (0xBC) PS;
+SBIT (0xBD) PT2;

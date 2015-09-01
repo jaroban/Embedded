@@ -1,0 +1,71 @@
+[general]
+caption=Monitor4
+
+[port]					; nastavenia portu
+no=2
+settings=9600,n,8,1
+
+[doors]
+a=1
+b=0
+
+[floors]				; oznacenie poschodi
+0=P
+1=1
+2=2
+3=3
+4=4
+5=5
+6=6
+7=7
+8=8
+9=9
+10=10
+11=11
+12=12
+13=13
+
+[liftsub]
+0=-25
+1=0
+2=25
+3=50
+4=30
+5=40
+6=40
+7=40
+8=50
+9=60
+10=60
+11=60
+12=75
+
+[errors]				; texty ku chybam
+1=Strata A1
+2=Strata A2
+3=Strata A3
+4=Strata A4
+5=Watchdog reset
+6=Doba jazdy
+7=Chyba start
+8=Prekrocenie poctu zatvarani
+9=Svetlena zavora
+10=5 x Reverz
+11=Sachtove dvere
+12=Horny+dolny spinac
+13=Vypol horny spinac
+14=Vypol dolny spinac
+15=Porucha stykacov
+16=Termistor
+17=Porucha modulu dorovnavania
+18=Doba dorovnavania
+19=Snimac C zly
+20=Zle poradie faz
+21=Prekrocenie poctu jazd
+22=Porucha modulu C
+23=Reset (napajanie)
+24=Nudzovy dojazd
+25=Reset (operacny system)
+26=Reset (oscilator)
+27=Strata A5
+28=Blokovanie dveri

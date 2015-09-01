@@ -1,0 +1,94 @@
+; version 1.0
+
+si_no                   equ     7
+si_history_no           equ     10
+
+lcd_en                  bit     p1.0
+lcd_rw                  bit     p1.1
+lcd_rs                  bit     p1.2
+ready                   bit     p1.4
+svetlo                  bit     p1.5
+k2                      bit     p1.6
+k1                      bit     p1.7
+scl_pin                 bit     p3.0
+sda_pin                 bit     p3.1
+data_bit                bit     p3.2
+wc                      bit     p3.3
+
+                        dseg at 8
+wd_cnt:                 ds      1
+timer_no:               ds      1
+brick_top:              ds      1
+brick_next:             ds      1
+thread_id:              ds      1
+to_kill:                ds      1
+slv_adr:                ds      1
+addr_lo:                ds      1
+addr_hi:                ds      1
+i2c_cnt:                ds      1
+a_total1:               ds      1
+a_total2:               ds      1
+a_delta:                ds      1
+a_time1:                ds      1
+a_time2:                ds      1
+a_time3:                ds      1
+a_pass:                 ds      1
+a_max:                  ds      1
+lcd_pos:                ds      1
+lcd_ind:                ds      1
+state:                  ds      1
+kb_state:               ds      1
+kb_count:               ds      1
+time_min:               ds      1
+time_sec:               ds      1
+inputs:                 ds      1
+bits1:                  ds      1
+bits2:                  ds      1
+total1:                 ds      5
+total2:                 ds      5
+delta:                  ds      1
+time1:                  ds      2
+time2:                  ds      2
+time3:                  ds      2
+pass:                   ds      2
+heslo:                  ds      2
+crc:                    ds      1
+mjrt_bffr:              ds      8
+buffer:                 ds      6
+;key1:                   ds      6
+;key2:                   ds      6
+;key3:                   ds      6
+i2c_buffer:             ds      3
+si_index:               ds      si_no
+si_history:             ds      si_history_no
+timer_table:            ds      no_of_timers*4
+
+                        iseg at 80h
+lcd_table:              ds      34*2
+brick_floor             equ     $
+brick_ceiling           equ     255
+
+k_start                 bit     acc.2
+k_stop                  bit     acc.1
+k_up                    bit     acc.4
+k_down                  bit     acc.3
+k_menu                  bit     acc.0
+k_ready                 bit     inputs.7
+
+w_total1                bit     bits1.0
+w_delta                 bit     bits1.1
+w_time1                 bit     bits1.2
+w_time2                 bit     bits1.3
+w_time3                 bit     bits1.4
+w_pass                  bit     bits1.5
+u_start                 bit     bits1.6
+u_stop                  bit     bits1.7
+k_access                bit     bits2.0
+o_start1                bit     bits2.1
+o_start2                bit     bits2.2
+lites_off               bit     bits2.3
+changed                 bit     bits2.4
+i2c_error               bit     bits2.5
+w_total2                bit     bits2.6
+
+                        cseg

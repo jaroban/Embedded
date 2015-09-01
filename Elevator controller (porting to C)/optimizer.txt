@@ -1,0 +1,119 @@
+replace restart {
+    lcall   %1
+} by {
+    ; opt 1
+    acall   %1 
+}
+
+replace restart { 
+    ajmp    %5
+} by {
+    ; opt 2
+    ret
+} if labelIsReturnOnly labelRefCountChange %5 -1
+
+replace restart { 
+    sjmp    %5
+} by { 
+    ; opt 3
+    ret 
+} if labelIsReturnOnly labelRefCountChange %5 -1
+
+replace restart {
+    ajmp    %1
+    ret
+} by {
+    ; opt 4
+    ajmp    %1
+}
+
+replace restart {
+    ajmp    %1
+%2:
+    ret
+} by {
+    ; opt 5
+    ajmp    %1
+} if labelRefCount %2 0 labelRefCountChange %2 -1
+
+replace restart {
+    acall   %1
+    ret
+} by {
+    ; opt 6
+    ajmp    %1
+}
+
+replace restart {
+    acall   %1
+%2:
+    ret
+} by {
+    ; opt 7
+    ajmp    %1
+} if labelRefCount %2 0 labelRefCountChange %2 -1
+
+replace restart {
+    acall   %1
+%2:
+    ret
+} by {
+    ; opt 8
+    ajmp    %1
+%2:
+    ret
+}
+
+replace restart {
+    mov     %1,#0
+    mov     a,%1
+    anl     a,%2
+    mov     c,acc.0
+} by {
+    ; opt 9
+    clr     a
+    mov     %1,a
+    clr     c
+}
+
+replace restart {
+    mov     r2,dpl
+    mov     r3,b1_0
+    mov     r4,b1_1
+    mov     r5,b1_2
+    push    ar2
+    mov     dpl,r2
+    mov     b1_0,r3
+    mov     b1_1,r4
+    mov     b1_2,r5
+} by {
+    ; opt 10
+    mov     r2,dpl
+    mov     r3,b1_0
+    mov     r4,b1_1
+    mov     r5,b1_2
+    push    ar2
+}
+
+replace restart {
+    pop     %1
+    pop     %2
+    pop     %3
+    pop     %4
+    push    %4
+    push    %3
+    push    %2
+    push    %1
+} by {
+    ; opt 11
+    
+}
+
+replace restart {
+    mov     a,#%1
+    addc    a,#0
+} by {
+    ; opt 12
+    clr     a
+    addc    a,#%1
+}
